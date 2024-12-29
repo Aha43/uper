@@ -58,7 +58,7 @@ public class DeSerilization
         // Validate Object Properties
         Assert.Equal("uuid-123", firstObject["Id"].ToString());
         Assert.Equal("SampleString", firstObject["StringValue"].ToString());
-        Assert.Equal(42, Convert.ToDecimal(firstObject["NumberValue"].ToString()));
+        Assert.Equal("42", firstObject["NumberValue"].ToString());
         //Assert.True((bool)firstObject["BooleanValue"]);
         //Assert.Null(firstObject["NullValue"]);
     }

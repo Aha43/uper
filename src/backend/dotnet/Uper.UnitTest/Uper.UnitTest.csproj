@@ -16,10 +16,15 @@
 
   <ItemGroup>
     <ProjectReference Include="../Uper.Domain/Uper.Domain.csproj" />
+    <ProjectReference Include="../Uper.Repository.Common/Uper.Repository.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Uper/Domain/" />
   </ItemGroup>
 
 </Project>
