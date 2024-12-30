@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Repository.Common", "U
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Repository.Turso", "Uper.Repository.Turso\Uper.Repository.Turso.csproj", "{3893C5C7-748F-485E-83AA-800B998B84A2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.IntegrationTest.Turso", "Uper.IntegrationTest.Turso\Uper.IntegrationTest.Turso.csproj", "{BF53AA49-68E2-4CEF-838B-3184A66C34A5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{3893C5C7-748F-485E-83AA-800B998B84A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3893C5C7-748F-485E-83AA-800B998B84A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3893C5C7-748F-485E-83AA-800B998B84A2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF53AA49-68E2-4CEF-838B-3184A66C34A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF53AA49-68E2-4CEF-838B-3184A66C34A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF53AA49-68E2-4CEF-838B-3184A66C34A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF53AA49-68E2-4CEF-838B-3184A66C34A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
