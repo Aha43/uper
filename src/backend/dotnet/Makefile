@@ -1,7 +1,7 @@
 # Variables
 SOLUTION = uperapi.sln
-PROJECT_DIR = src
-TEST_PROJECT = $(PROJECT_DIR)/backend/dotnet/Uper.UnitTest
+SOLUTION_DIR = .
+TEST_PROJECT = $(SOLUTION_DIR)/Uper.UnitTest
 
 # Default target
 all: build
@@ -20,7 +20,7 @@ restore:
 	dotnet restore $(SOLUTION)
 
 run:
-	dotnet run --project $(PROJECT_DIR)/backend/dotnet/Uper.Api
+	dotnet run --project $(SOLUTION_DIR)/Uper.Api
 
 format:
 	dotnet format $(SOLUTION)
