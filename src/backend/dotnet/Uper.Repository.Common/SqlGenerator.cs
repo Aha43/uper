@@ -6,11 +6,6 @@ namespace Uper.Repository.Common;
 
 internal class SqlGenerator : ISqlGenerator
 {
-    public string GenerateDeleteSql(string type, string id, string userId)
-    {
-        throw new NotImplementedException();
-    }
-
     public string GenerateInsertParameterizedSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
         if (string.IsNullOrWhiteSpace(dto.Type))
@@ -83,39 +78,33 @@ internal class SqlGenerator : ISqlGenerator
         // Build the column list for SQL
         var columnList = string.Join(", ", allColumns);
 
-        // Generate value rows with actual data
+        // Generate value rows without escaping
         var valueRows = new List<string>();
-        for (int i = 0; i < dto.Objects.Count; i++)
+        foreach (var obj in dto.Objects)
         {
-            var obj = dto.Objects[i];
             var rowValues = allColumns.Select(col =>
             {
                 if (col.Equals("UserId", StringComparison.OrdinalIgnoreCase))
-                    return $"'{EscapeSql(userId)}'";
+                    return $"'{userId}'";
 
-                return obj.ContainsKey(col) ? $"'{EscapeSql(obj[col]?.ToString() ?? "NULL")}'" : "NULL";
+                return obj.ContainsKey(col) ? $"'{obj[col]?.ToString() ?? "NULL"}'" : "NULL";
             });
 
             valueRows.Add($"({string.Join(", ", rowValues)})");
         }
 
-        // Construct the final SQL
         return $@"
         INSERT INTO {dto.Type} ({columnList}) VALUES
         {string.Join(", ", valueRows)};
     ";
     }
 
-    public string GenerateSelectAllSql(string type, string userId)
-    {
-        throw new NotImplementedException();
-    }
 
     public string GenerateUpdateSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
         throw new NotImplementedException();
     }
 
-    private static string EscapeSql(string value) => value.Replace("'", "''"); // Escape single quotes
+    //private static string EscapeSql(string value) => value.Replace("'", "''"); // Escape single quotes
 
 }
