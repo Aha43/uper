@@ -7,7 +7,7 @@ namespace Uper.UnitTest.Uper.Repository.Common;
 
 public class SqlGeneratorTest
 {
-    private ISqlGenerator _sqlGenerator;
+    private readonly ISqlGenerator _sqlGenerator;
 
     public SqlGeneratorTest()
     {
@@ -19,33 +19,31 @@ public class SqlGeneratorTest
     }
 
     [Fact]
-    public void GenerateInsertSql_ShouldGenerateCorrectSql()
+    public void GenerateInsertParameterizedSql_ShouldGenerateCorrectSql()
     {
         // Arrange
         var dto = new CreateUpdateDto
         {
             Type = "ExampleType",
-            Objects = new List<Dictionary<string, object>>
-        {
-            new Dictionary<string, object>
-            {
-                { "Id", "uuid-123" },
-                { "Name", "Sample Object" },
-                { "Description", "A test object" }
-            },
-            new Dictionary<string, object>
-            {
-                { "Id", "uuid-124" },
-                { "Name", "Another Object" }
-            }
-        }
+            Objects =
+            [
+                new() {
+                    { "Id", "uuid-123" },
+                    { "Name", "Sample Object" },
+                    { "Description", "A test object" }
+                },
+                new() {
+                    { "Id", "uuid-124" },
+                    { "Name", "Another Object" }
+                }
+            ]
         };
 
         var userId = "auth0|user-abc";
         var columnNames = new[] { "Id", "Name", "Description", "UserId" };
 
         // Act
-        var sql = _sqlGenerator.GenerateInsertSql(dto, userId, columnNames);
+        var sql = _sqlGenerator.GenerateInsertParameterizedSql(dto, userId, columnNames);
 
         // Assert
         var expectedSql = @"
@@ -61,8 +59,6 @@ public class SqlGeneratorTest
     }
 
     private static string NormalizeSql(string sql)
-    {
-        return string.Join(" ", sql.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
-    }
+        => string.Join(" ", sql.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
 
 }

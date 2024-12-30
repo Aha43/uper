@@ -11,7 +11,7 @@ internal class SqlGenerator : ISqlGenerator
         throw new NotImplementedException();
     }
 
-    public string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
+    public string GenerateInsertParameterizedSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
         if (string.IsNullOrWhiteSpace(dto.Type))
             throw new ArgumentException("Type is required.", nameof(dto.Type));
@@ -64,6 +64,48 @@ internal class SqlGenerator : ISqlGenerator
         return sqlBuilder.ToString();
     }
 
+    public string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
+    {
+        if (string.IsNullOrWhiteSpace(dto.Type))
+            throw new ArgumentException("Type is required.", nameof(dto.Type));
+        if (dto.Objects == null || !dto.Objects.Any())
+            throw new ArgumentException("At least one object must be provided.", nameof(dto.Objects));
+        if (string.IsNullOrWhiteSpace(userId))
+            throw new ArgumentException("UserId is required.", nameof(userId));
+
+        // Ensure Id and UserId columns are included
+        var allColumns = new HashSet<string>(columnNames, StringComparer.OrdinalIgnoreCase)
+        {
+            "Id",
+            "UserId"
+        };
+
+        // Build the column list for SQL
+        var columnList = string.Join(", ", allColumns);
+
+        // Generate value rows with actual data
+        var valueRows = new List<string>();
+        for (int i = 0; i < dto.Objects.Count; i++)
+        {
+            var obj = dto.Objects[i];
+            var rowValues = allColumns.Select(col =>
+            {
+                if (col.Equals("UserId", StringComparison.OrdinalIgnoreCase))
+                    return $"'{EscapeSql(userId)}'";
+
+                return obj.ContainsKey(col) ? $"'{EscapeSql(obj[col]?.ToString() ?? "NULL")}'" : "NULL";
+            });
+
+            valueRows.Add($"({string.Join(", ", rowValues)})");
+        }
+
+        // Construct the final SQL
+        return $@"
+        INSERT INTO {dto.Type} ({columnList}) VALUES
+        {string.Join(", ", valueRows)};
+    ";
+    }
+
     public string GenerateSelectAllSql(string type, string userId)
     {
         throw new NotImplementedException();
@@ -73,4 +115,7 @@ internal class SqlGenerator : ISqlGenerator
     {
         throw new NotImplementedException();
     }
+
+    private static string EscapeSql(string value) => value.Replace("'", "''"); // Escape single quotes
+
 }

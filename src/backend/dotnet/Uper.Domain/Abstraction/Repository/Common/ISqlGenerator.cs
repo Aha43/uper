@@ -12,6 +12,15 @@ public interface ISqlGenerator
     /// <param name="userId">The ID of the authenticated user.</param>
     /// <param name="columnNames">The column names for the given entity type.</param>
     /// <returns>A parameterized SQL INSERT statement as a string.</returns>
+    string GenerateInsertParameterizedSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames);
+
+    /// <summary>
+    /// Generates an INSERT SQL statement for the given entity type and objects not parameterized.
+    /// </summary>
+    /// <param name="dto">The CreateUpdateDto containing the type and objects to insert.</param>
+    /// <param name="userId">The ID of the authenticated user.</param>
+    /// <param name="columnNames">The column names for the given entity type.</param>
+    /// <returns>A SQL INSERT statement as a string.</returns>
     string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames);
 
     /// <summary>
