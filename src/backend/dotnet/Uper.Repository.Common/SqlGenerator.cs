@@ -61,24 +61,14 @@ internal class SqlGenerator : ISqlGenerator
 
     public string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
-        if (string.IsNullOrWhiteSpace(dto.Type))
-            throw new ArgumentException("Type is required.", nameof(dto.Type));
-        if (dto.Objects == null || !dto.Objects.Any())
-            throw new ArgumentException("At least one object must be provided.", nameof(dto.Objects));
-        if (string.IsNullOrWhiteSpace(userId))
-            throw new ArgumentException("UserId is required.", nameof(userId));
-
-        // Ensure Id and UserId columns are included
         var allColumns = new HashSet<string>(columnNames, StringComparer.OrdinalIgnoreCase)
-        {
-            "Id",
-            "UserId"
-        };
+    {
+        "Id",
+        "UserId"
+    };
 
-        // Build the column list for SQL
         var columnList = string.Join(", ", allColumns);
 
-        // Generate value rows without escaping
         var valueRows = new List<string>();
         foreach (var obj in dto.Objects)
         {
@@ -87,7 +77,9 @@ internal class SqlGenerator : ISqlGenerator
                 if (col.Equals("UserId", StringComparison.OrdinalIgnoreCase))
                     return $"'{userId}'";
 
-                return obj.ContainsKey(col) ? $"'{obj[col]?.ToString() ?? "NULL"}'" : "NULL";
+                return obj.ContainsKey(col)
+                    ? (obj[col] == null ? "NULL" : $"'{obj[col].ToString()}'")
+                    : "NULL";
             });
 
             valueRows.Add($"({string.Join(", ", rowValues)})");
@@ -104,7 +96,5 @@ internal class SqlGenerator : ISqlGenerator
     {
         throw new NotImplementedException();
     }
-
-    //private static string EscapeSql(string value) => value.Replace("'", "''"); // Escape single quotes
 
 }

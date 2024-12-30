@@ -14,6 +14,6 @@ namespace Uper.Domain.Request.Dto
         /// An array of objects to be created or updated.
         /// </summary>
         [JsonPropertyName("objects")]
-        public required List<Dictionary<string, object>> Objects { get; set; }
+        public required List<Dictionary<string, object?>> Objects { get; set; }
     }
 }
