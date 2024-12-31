@@ -1,7 +1,8 @@
 # Variables
 SOLUTION = uperapi.sln
 SOLUTION_DIR = .
-TEST_PROJECT = $(SOLUTION_DIR)/Uper.UnitTest
+UNIT_TEST_PROJECT = $(SOLUTION_DIR)/Uper.UnitTest
+INTEGRATION_TEST_PROJECT = $(SOLUTION_DIR)/Uper.IntegrationTest.*
 
 # Default target
 all: build
@@ -10,8 +11,11 @@ all: build
 build:
 	dotnet build $(SOLUTION)
 
-test:
-	dotnet test $(TEST_PROJECT)
+utest:
+	dotnet test $(UNIT_TEST_PROJECT)
+
+itest:
+	dotnet test $(INTEGRATION_TEST_PROJECT)
 
 clean:
 	dotnet clean $(SOLUTION)
@@ -36,7 +40,8 @@ help:
 	@echo "Usage: make [target]"
 	@echo "Targets:"
 	@echo "  build        Build the solution."
-	@echo "  test         Run tests for the solution."
+	@echo "  utest        Run unit tests for the solution."
+	@echo "  itest        Run integration tests for the solution."
 	@echo "  clean        Clean the solution."
 	@echo "  restore      Restore NuGet packages for the solution."
 	@echo "  run          Run the API project."

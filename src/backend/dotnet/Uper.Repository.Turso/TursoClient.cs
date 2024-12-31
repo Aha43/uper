@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.Json;
 
 namespace Uper.Repository.Turso;
 
@@ -12,20 +13,20 @@ public sealed class TursoClient(HttpClient httpClient)
     public async Task<string> ExecuteQueryAsync(string sql)
     {
         if (string.IsNullOrWhiteSpace(sql))
+        {
             throw new ArgumentException("SQL query cannot be null or empty.", nameof(sql));
+        }
 
-        var content = new StringContent($"{{\"sql\": \"{EscapeSql(sql)}\"}}", Encoding.UTF8, "application/json");
-        var response = await httpClient.PostAsync("/query", content);
+        var tursoRequests = sql.CreateTursoRequest();
+        var json = JsonSerializer.Serialize(tursoRequests);
+
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+        
+        var response = await httpClient.PostAsync("/v2/pipeline", content);
 
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadAsStringAsync();
     }
 
-    /// <summary>
-    /// Escapes special characters in the SQL query for safe usage.
-    /// </summary>
-    /// <param name="sql">The SQL query to escape.</param>
-    /// <returns>The escaped SQL query.</returns>
-    private static string EscapeSql(string sql) => sql.Replace("\"", "\\\"");
 }
