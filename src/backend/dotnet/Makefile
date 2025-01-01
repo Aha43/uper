@@ -2,7 +2,7 @@
 SOLUTION = uperapi.sln
 SOLUTION_DIR = .
 UNIT_TEST_PROJECT = $(SOLUTION_DIR)/Uper.UnitTest
-INTEGRATION_TEST_PROJECT = $(SOLUTION_DIR)/Uper.IntegrationTest.*
+INTEGRATION_TEST_PROJECT = $(SOLUTION_DIR)/Uper.IntegrationTest.Turso
 
 # Default target
 all: build
