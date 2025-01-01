@@ -8,6 +8,12 @@ internal class SqlGenerator : ISqlGenerator
 {
     public string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
+        if (dto.Objects.Count == 0)
+            throw new ArgumentException("At least one object must be provided.", "dto.Objects");
+
+        if (!columnNames.Any())
+            throw new ArgumentException("At least one column name must be provided.", nameof(columnNames));
+
         var allColumns = new HashSet<string>(columnNames, StringComparer.OrdinalIgnoreCase)
         {
             "Id",
@@ -24,8 +30,8 @@ internal class SqlGenerator : ISqlGenerator
                 if (col.Equals("UserId", StringComparison.OrdinalIgnoreCase))
                     return $"'{userId}'";
 
-                return obj.ContainsKey(col)
-                    ? (obj[col] == null ? "NULL" : $"'{obj[col].ToString()}'")
+                return obj.TryGetValue(col, out var value)
+                    ? (value == null ? "NULL" : $"'{value}'")
                     : "NULL";
             });
 
@@ -40,12 +46,18 @@ internal class SqlGenerator : ISqlGenerator
 
     public string GenerateUpdateSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
+        if (dto.Objects.Count == 0)
+            throw new ArgumentException("At least one object must be provided.", "dto.Objects");
+
+        if (!columnNames.Any())
+            throw new ArgumentException("At least one column name must be provided.", nameof(columnNames));
+
         var sb = new StringBuilder();
 
         foreach (var obj in dto.Objects)
         {
-            if (!obj.ContainsKey("Id"))
-                throw new ArgumentException("Each object must include an 'Id' key.", nameof(dto.Objects));
+            if (!obj.TryGetValue("Id", out var idValue) || idValue == null)
+                throw new ArgumentException("Each object must include a non-null 'Id' key.", "dto.Objects");
 
             sb.Append("UPDATE ").Append(dto.Type).Append(" SET ");
 
@@ -53,27 +65,29 @@ internal class SqlGenerator : ISqlGenerator
                 .Where(col => col != "Id") // Exclude "Id" from the SET clause
                 .Select(col =>
                 {
-                    var value = obj.ContainsKey(col) && obj[col] != null
-                        ? FormatValue(obj[col])
-                        : "NULL";
-                    return $"{col} = {value}";
+                    if (obj.TryGetValue(col, out var value))
+                    {
+                        return value == null ? $"{col} = NULL" : $"{col} = {FormatValue(value)}";
+                    }
+                    else
+                    {
+                        return $"{col} = NULL";
+                    }
                 });
 
             sb.Append(string.Join(", ", setClauses));
-
-            var idValue = FormatValue(obj["Id"]);
-            sb.Append(" WHERE Id = ").Append(idValue).Append(";");
+            sb.Append(" WHERE Id = '").Append(idValue).Append("';");
         }
 
         return sb.ToString();
     }
 
-    private static string? FormatValue(object value)
+    private static string? FormatValue(object? value)
     {
         return value switch
         {
             string str => $"'{str}'",
-            int or long or double or decimal => value.ToString(),
+            int or long or double or decimal => $"'{value}'",
             bool boolVal => boolVal ? "1" : "0",
             null => "NULL",
             _ => throw new ArgumentException($"Unsupported value type: {value.GetType()}.")

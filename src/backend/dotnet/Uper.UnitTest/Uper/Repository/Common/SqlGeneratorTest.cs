@@ -57,6 +57,78 @@ public class SqlGeneratorTest
         Assert.Equal(NormalizeSql(expectedSql), NormalizeSql(sql));
     }
 
+    [Fact]
+    public void GenerateUpdateSql_ShouldGenerateCorrectSql()
+    {
+        // Arrange
+        var dto = new CreateUpdateDto
+        {
+            Type = "TestTable",
+            Objects =
+            [
+                new() 
+                { 
+                    ["Id"] = "1", 
+                    ["Name"] = "Updated Name", 
+                    ["Description"] = null, 
+                    ["UserId"] = "auth0|user-abc" 
+                },
+                new() 
+                { 
+                    ["Id"] = "2", 
+                    ["Name"] = "Another Update", 
+                    ["Description"] = "Updated Description", 
+                    ["UserId"] = "User2" 
+                }
+            ]
+        };
+        var columnNames = new List<string> { "Id", "Name", "Description", "UserId" };
+        var userId = "auth0|user-abc";
+
+        // Act
+        var sql = _sqlGenerator.GenerateUpdateSql(dto, userId, columnNames);
+
+        // Assert
+        var expectedSql =
+            "UPDATE TestTable SET Name = 'Updated Name', Description = NULL, UserId = 'auth0|user-abc' WHERE Id = '1';" +
+            "UPDATE TestTable SET Name = 'Another Update', Description = 'Updated Description', UserId = 'User2' WHERE Id = '2';";
+
+        Assert.Equal(expectedSql, sql);
+    }
+
+    [Fact]
+    public void GenerateUpdateSql_ShouldThrowException_WhenObjectsAreEmpty()
+    {
+        // Arrange
+        var dto = new CreateUpdateDto
+        {
+            Type = "TestTable",
+            Objects = []
+        };
+        var columnNames = new List<string> { "Id", "Name" };
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => _sqlGenerator.GenerateUpdateSql(dto, "user", columnNames));
+    }
+
+    [Fact]
+    public void GenerateUpdateSql_ShouldThrowException_WhenIdIsMissing()
+    {
+        // Arrange
+        var dto = new CreateUpdateDto
+        {
+            Type = "TestTable",
+            Objects =
+            [
+                new() { ["Name"] = "Test Name" } // Missing Id
+            ]
+        };
+        var columnNames = new List<string> { "Id", "Name" };
+
+        // Act & Assert
+        Assert.Throws<ArgumentException>(() => _sqlGenerator.GenerateUpdateSql(dto, "user", columnNames));
+    }
+
     private static string NormalizeSql(string sql)
         => string.Join(" ", sql.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries).Select(s => s.Trim()));
 

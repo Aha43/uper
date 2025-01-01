@@ -22,10 +22,10 @@ public class DeSerilization
         Assert.NotNull(dto);
         Assert.Equal("ExampleType", dto.Type);
         Assert.Equal(2, dto.Objects.Count);
-        Assert.Equal("uuid-123", dto.Objects[0]["Id"].ToString());
-        Assert.Equal("Sample", dto.Objects[0]["Name"].ToString());
-        Assert.Equal("uuid-124", dto.Objects[1]["Id"].ToString());
-        Assert.Equal("Another", dto.Objects[1]["Name"].ToString());
+        Assert.Equal("uuid-123", dto.Objects[0]["Id"]?.ToString());
+        Assert.Equal("Sample", dto.Objects[0]["Name"]?.ToString());
+        Assert.Equal("uuid-124", dto.Objects[1]["Id"]?.ToString());
+        Assert.Equal("Another", dto.Objects[1]["Name"]?.ToString());
     }
 
     [Fact]
@@ -56,9 +56,9 @@ public class DeSerilization
         var firstObject = dto.Objects[0];
 
         // Validate Object Properties
-        Assert.Equal("uuid-123", firstObject["Id"].ToString());
-        Assert.Equal("SampleString", firstObject["StringValue"].ToString());
-        Assert.Equal("42", firstObject["NumberValue"].ToString());
+        Assert.Equal("uuid-123", firstObject["Id"]?.ToString());
+        Assert.Equal("SampleString", firstObject["StringValue"]?.ToString());
+        Assert.Equal("42", firstObject["NumberValue"]?.ToString());
         //Assert.True((bool)firstObject["BooleanValue"]);
         //Assert.Null(firstObject["NullValue"]);
     }
