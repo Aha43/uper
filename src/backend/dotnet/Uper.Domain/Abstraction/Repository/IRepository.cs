@@ -10,7 +10,7 @@ public interface IRepository
     /// <param name="type">The type of the entities to retrieve.</param>
     /// <param name="userId">The ID of the authenticated user.</param>
     /// <returns>A collection of entities as dictionaries representing the retrieved data.</returns>
-    Task<IEnumerable<Dictionary<string, object>>> GetAllAsync(string type, string userId);
+    Task<IEnumerable<Dictionary<string, object?>>> GetAllAsync(string type, string userId);
 
     /// <summary>
     /// Retrieves a single entity by its ID and type scoped to the authenticated user.
@@ -19,7 +19,7 @@ public interface IRepository
     /// <param name="id">The ID of the entity to retrieve.</param>
     /// <param name="userId">The ID of the authenticated user.</param>
     /// <returns>The entity as a dictionary if found, or null if not found.</returns>
-    Task<Dictionary<string, object>?> GetByIdAsync(string type, string id, string userId);
+    Task<Dictionary<string, object?>?> GetByIdAsync(string type, string id, string userId);
 
     /// <summary>
     /// Creates new entities of the specified type scoped to the authenticated user.

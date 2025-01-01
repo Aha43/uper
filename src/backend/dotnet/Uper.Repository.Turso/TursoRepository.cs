@@ -19,7 +19,7 @@ public sealed class TursoRepository(TursoClient tursoClient, ISqlGenerator sqlGe
         await tursoClient.ExecuteQueryAsync(sql);
     }
 
-    public async Task<IEnumerable<Dictionary<string, object>>> GetAllAsync(string type, string userId)
+    public async Task<IEnumerable<Dictionary<string, object?>>> GetAllAsync(string type, string userId)
     {
         var sql = $@"
         SELECT *
@@ -27,16 +27,16 @@ public sealed class TursoRepository(TursoClient tursoClient, ISqlGenerator sqlGe
         WHERE UserId = '{userId}';";
 
         var jsonResponse = await tursoClient.ExecuteQueryAsync(sql);
-
-        return JsonSerializer.Deserialize<IEnumerable<Dictionary<string, object>>>(jsonResponse) ?? [];
+        var parsedResponse = TursoResponseParser.Parse(jsonResponse);
+        return parsedResponse.Rows;
     }
 
-    public async Task<Dictionary<string, object>?> GetByIdAsync(string type, string id, string userId)
+    public async Task<Dictionary<string, object?>?> GetByIdAsync(string type, string id, string userId)
     {
         var sql = $"SELECT * FROM {type} WHERE Id = '{id}' AND UserId = '{userId}';";
         var jsonResponse = await tursoClient.ExecuteQueryAsync(sql);
-
-        return JsonSerializer.Deserialize<IEnumerable<Dictionary<string, object>>>(jsonResponse)?.FirstOrDefault();
+        var parsedResponse = TursoResponseParser.Parse(jsonResponse);
+        return parsedResponse.Rows.FirstOrDefault();
     }
 
     public async Task UpdateAsync(CreateUpdateDto dto, string userId)

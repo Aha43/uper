@@ -6,66 +6,13 @@ namespace Uper.Repository.Common;
 
 internal class SqlGenerator : ISqlGenerator
 {
-    public string GenerateInsertParameterizedSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
+    public string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
-        if (string.IsNullOrWhiteSpace(dto.Type))
-            throw new ArgumentException("Type is required.", nameof(dto.Type));
-        if (dto.Objects == null || !dto.Objects.Any())
-            throw new ArgumentException("At least one object must be provided.", nameof(dto.Objects));
-        if (string.IsNullOrWhiteSpace(userId))
-            throw new ArgumentException("UserId is required.", nameof(userId));
-
-        // Ensure Id and UserId columns are included
         var allColumns = new HashSet<string>(columnNames, StringComparer.OrdinalIgnoreCase)
         {
             "Id",
             "UserId"
         };
-
-        // Build the column list for SQL
-        var columnList = string.Join(", ", allColumns);
-
-        // Build value placeholders (e.g., @Id, @UserId)
-        var valuePlaceholders = string.Join(", ", allColumns.Select(col => $"@{col}"));
-
-        // Construct the base INSERT statement
-        var sqlBuilder = new StringBuilder();
-        sqlBuilder.AppendLine($"INSERT INTO {dto.Type} ({columnList}) VALUES");
-
-        // Generate value placeholders for each object
-        var objectIndex = 0;
-        foreach (var obj in dto.Objects)
-        {
-            if (!obj.ContainsKey("Id"))
-                throw new ArgumentException("Each object must contain an Id property.", nameof(dto.Objects));
-
-            // Map object properties to placeholders
-            var placeholders = allColumns.Select(col =>
-            {
-                if (col.Equals("UserId", StringComparison.OrdinalIgnoreCase))
-                    return $"@UserId_{objectIndex}";
-
-                return obj.ContainsKey(col) ? $"@{col}_{objectIndex}" : "NULL";
-            });
-
-            sqlBuilder.AppendLine($"({string.Join(", ", placeholders)}),");
-            objectIndex++;
-        }
-
-        // Remove the trailing comma
-        sqlBuilder.Length -= 3;
-        sqlBuilder.Append(");");
-
-        return sqlBuilder.ToString();
-    }
-
-    public string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
-    {
-        var allColumns = new HashSet<string>(columnNames, StringComparer.OrdinalIgnoreCase)
-    {
-        "Id",
-        "UserId"
-    };
 
         var columnList = string.Join(", ", allColumns);
 
@@ -91,10 +38,46 @@ internal class SqlGenerator : ISqlGenerator
     ";
     }
 
-
     public string GenerateUpdateSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
     {
-        throw new NotImplementedException();
+        var sb = new StringBuilder();
+
+        foreach (var obj in dto.Objects)
+        {
+            if (!obj.ContainsKey("Id"))
+                throw new ArgumentException("Each object must include an 'Id' key.", nameof(dto.Objects));
+
+            sb.Append("UPDATE ").Append(dto.Type).Append(" SET ");
+
+            var setClauses = columnNames
+                .Where(col => col != "Id") // Exclude "Id" from the SET clause
+                .Select(col =>
+                {
+                    var value = obj.ContainsKey(col) && obj[col] != null
+                        ? FormatValue(obj[col])
+                        : "NULL";
+                    return $"{col} = {value}";
+                });
+
+            sb.Append(string.Join(", ", setClauses));
+
+            var idValue = FormatValue(obj["Id"]);
+            sb.Append(" WHERE Id = ").Append(idValue).Append(";");
+        }
+
+        return sb.ToString();
+    }
+
+    private static string? FormatValue(object value)
+    {
+        return value switch
+        {
+            string str => $"'{str}'",
+            int or long or double or decimal => value.ToString(),
+            bool boolVal => boolVal ? "1" : "0",
+            null => "NULL",
+            _ => throw new ArgumentException($"Unsupported value type: {value.GetType()}.")
+        };
     }
 
 }

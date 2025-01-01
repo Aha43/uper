@@ -62,15 +62,6 @@ namespace Uper.Domain.Abstraction.Repository.Common;
 public interface ISqlGenerator
 {
     /// <summary>
-    /// Generates an INSERT SQL statement for the given entity type and objects.
-    /// </summary>
-    /// <param name="dto">The CreateUpdateDto containing the type and objects to insert.</param>
-    /// <param name="userId">The ID of the authenticated user.</param>
-    /// <param name="columnNames">The column names for the given entity type.</param>
-    /// <returns>A parameterized SQL INSERT statement as a string.</returns>
-    string GenerateInsertParameterizedSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames);
-
-    /// <summary>
     /// Generates an INSERT SQL statement for the given entity type and objects not parameterized.
     /// 
     /// </summary>
@@ -89,4 +80,3 @@ public interface ISqlGenerator
     /// <returns>A parameterized SQL UPDATE statement as a string.</returns>
     string GenerateUpdateSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames);
 }
-
