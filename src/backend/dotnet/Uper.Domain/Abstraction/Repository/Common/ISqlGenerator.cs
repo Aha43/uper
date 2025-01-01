@@ -67,16 +67,14 @@ public interface ISqlGenerator
     /// </summary>
     /// <param name="dto">The CreateUpdateDto containing the type and objects to insert.</param>
     /// <param name="userId">The ID of the authenticated user.</param>
-    /// <param name="columnNames">The column names for the given entity type.</param>
     /// <returns>A SQL INSERT statement as a string.</returns>
-    string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames);
+    string GenerateInsertSql(CreateUpdateDto dto, string userId);
 
     /// <summary>
     /// Generates an UPDATE SQL statement for the given entity type and objects.
     /// </summary>
     /// <param name="dto">The CreateUpdateDto containing the type and objects to update.</param>
     /// <param name="userId">The ID of the authenticated user.</param>
-    /// <param name="columnNames">The column names for the given entity type.</param>
     /// <returns>A parameterized SQL UPDATE statement as a string.</returns>
-    string GenerateUpdateSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames);
+    string GenerateUpdateSql(CreateUpdateDto dto, string userId);
 }

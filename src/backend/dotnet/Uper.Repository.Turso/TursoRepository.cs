@@ -1,4 +1,3 @@
-using System.Text.Json;
 using Uper.Domain.Abstraction.Repository;
 using Uper.Domain.Abstraction.Repository.Common;
 using Uper.Domain.Request.Dto;
@@ -9,7 +8,7 @@ public sealed class TursoRepository(TursoClient tursoClient, ISqlGenerator sqlGe
 {
     public async Task CreateAsync(CreateUpdateDto dto, string userId)
     {
-        var sql = sqlGenerator.GenerateInsertSql(dto, userId, dto.Objects.FirstOrDefault()?.Keys ?? Enumerable.Empty<string>());
+        var sql = sqlGenerator.GenerateInsertSql(dto, userId);
         await tursoClient.ExecuteQueryAsync(sql);
     }
 
@@ -41,7 +40,7 @@ public sealed class TursoRepository(TursoClient tursoClient, ISqlGenerator sqlGe
 
     public async Task UpdateAsync(CreateUpdateDto dto, string userId)
     {
-        var sql = sqlGenerator.GenerateUpdateSql(dto, userId, dto.Objects.FirstOrDefault()?.Keys ?? Enumerable.Empty<string>());
+        var sql = sqlGenerator.GenerateUpdateSql(dto, userId);
         await tursoClient.ExecuteQueryAsync(sql);
     }
 }

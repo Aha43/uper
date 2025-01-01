@@ -6,13 +6,12 @@ namespace Uper.Repository.Common;
 
 internal class SqlGenerator : ISqlGenerator
 {
-    public string GenerateInsertSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
+    public string GenerateInsertSql(CreateUpdateDto dto, string userId)
     {
         if (dto.Objects.Count == 0)
             throw new ArgumentException("At least one object must be provided.", "dto.Objects");
 
-        if (!columnNames.Any())
-            throw new ArgumentException("At least one column name must be provided.", nameof(columnNames));
+        var columnNames = dto.Objects.FirstOrDefault()?.Keys ?? Enumerable.Empty<string>();
 
         var allColumns = new HashSet<string>(columnNames, StringComparer.OrdinalIgnoreCase)
         {
@@ -44,13 +43,12 @@ internal class SqlGenerator : ISqlGenerator
     ";
     }
 
-    public string GenerateUpdateSql(CreateUpdateDto dto, string userId, IEnumerable<string> columnNames)
+    public string GenerateUpdateSql(CreateUpdateDto dto, string userId)
     {
         if (dto.Objects.Count == 0)
             throw new ArgumentException("At least one object must be provided.", "dto.Objects");
 
-        if (!columnNames.Any())
-            throw new ArgumentException("At least one column name must be provided.", nameof(columnNames));
+        var columnNames = dto.Objects.FirstOrDefault()?.Keys ?? Enumerable.Empty<string>();
 
         var sb = new StringBuilder();
 

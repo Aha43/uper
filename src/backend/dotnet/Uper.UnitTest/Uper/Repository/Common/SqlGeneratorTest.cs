@@ -41,10 +41,9 @@ public class SqlGeneratorTest
         };
 
         var userId = "auth0|user-abc";
-        var columnNames = new[] { "Id", "Name", "Description", "UserId" };
 
         // Act
-        var sql = _sqlGenerator.GenerateInsertSql(dto, userId, columnNames);
+        var sql = _sqlGenerator.GenerateInsertSql(dto, userId);
 
         // Assert
         var expectedSql = @"
@@ -82,11 +81,10 @@ public class SqlGeneratorTest
                 }
             ]
         };
-        var columnNames = new List<string> { "Id", "Name", "Description", "UserId" };
         var userId = "auth0|user-abc";
 
         // Act
-        var sql = _sqlGenerator.GenerateUpdateSql(dto, userId, columnNames);
+        var sql = _sqlGenerator.GenerateUpdateSql(dto, userId);
 
         // Assert
         var expectedSql =
@@ -105,10 +103,9 @@ public class SqlGeneratorTest
             Type = "TestTable",
             Objects = []
         };
-        var columnNames = new List<string> { "Id", "Name" };
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _sqlGenerator.GenerateUpdateSql(dto, "user", columnNames));
+        Assert.Throws<ArgumentException>(() => _sqlGenerator.GenerateUpdateSql(dto, "user"));
     }
 
     [Fact]
@@ -123,10 +120,9 @@ public class SqlGeneratorTest
                 new() { ["Name"] = "Test Name" } // Missing Id
             ]
         };
-        var columnNames = new List<string> { "Id", "Name" };
 
         // Act & Assert
-        Assert.Throws<ArgumentException>(() => _sqlGenerator.GenerateUpdateSql(dto, "user", columnNames));
+        Assert.Throws<ArgumentException>(() => _sqlGenerator.GenerateUpdateSql(dto, "user"));
     }
 
     private static string NormalizeSql(string sql)
