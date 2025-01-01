@@ -1,31 +1,24 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using Uper.Domain.Abstraction.Repository;
+using Uper.Domain.Request.Dto;
+
+namespace Uper.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Authorize]
-public class UperController : ControllerBase
+public class UperController(IRepository repository) : ControllerBase
 {
-    private readonly IRepository _repository;
-
-    public UperController(IRepository repository)
-    {
-        _repository = repository;
-    }
-
-    private string GetUserId()
-    {
-        return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException("User ID not found in token.");
-    }
+    private string GetUserId() 
+        => User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? throw new UnauthorizedAccessException("User ID not found in token.");
 
     [HttpPost("create")]
     public async Task<IActionResult> CreateAsync([FromBody] CreateUpdateDto dto)
     {
         var userId = GetUserId();
-        await _repository.CreateAsync(dto);
+        await repository.CreateAsync(dto, userId);
         return Ok("Data created successfully.");
     }
 
@@ -33,7 +26,7 @@ public class UperController : ControllerBase
     public async Task<IActionResult> UpdateAsync([FromBody] CreateUpdateDto dto)
     {
         var userId = GetUserId();
-        await _repository.UpdateAsync(dto);
+        await repository.UpdateAsync(dto, userId);
         return Ok("Data updated successfully.");
     }
 
@@ -41,7 +34,7 @@ public class UperController : ControllerBase
     public async Task<IActionResult> GetAllAsync(string type)
     {
         var userId = GetUserId();
-        var data = await _repository.GetAllAsync(type, userId);
+        var data = await repository.GetAllAsync(type, userId);
         return Ok(data);
     }
 
@@ -49,7 +42,7 @@ public class UperController : ControllerBase
     public async Task<IActionResult> GetByIdAsync(string type, string id)
     {
         var userId = GetUserId();
-        var data = await _repository.GetByIdAsync(type, id, userId);
+        var data = await repository.GetByIdAsync(type, id, userId);
         if (data == null)
         {
             return NotFound();
@@ -62,7 +55,7 @@ public class UperController : ControllerBase
     public async Task<IActionResult> DeleteAsync(string type, string id)
     {
         var userId = GetUserId();
-        await _repository.DeleteAsync(type, id, userId);
+        await repository.DeleteAsync(type, id, userId);
         return Ok("Data deleted successfully.");
     }
 }
