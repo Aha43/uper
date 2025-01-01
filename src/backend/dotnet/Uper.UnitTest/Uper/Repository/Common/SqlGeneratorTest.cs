@@ -65,19 +65,19 @@ public class SqlGeneratorTest
             Type = "TestTable",
             Objects =
             [
-                new() 
-                { 
-                    ["Id"] = "1", 
-                    ["Name"] = "Updated Name", 
-                    ["Description"] = null, 
-                    ["UserId"] = "auth0|user-abc" 
+                new()
+                {
+                    ["Id"] = "1",
+                    ["Name"] = "Updated Name",
+                    ["Description"] = null,
+                    ["UserId"] = "auth0|user-abc"
                 },
-                new() 
-                { 
-                    ["Id"] = "2", 
-                    ["Name"] = "Another Update", 
-                    ["Description"] = "Updated Description", 
-                    ["UserId"] = "User2" 
+                new()
+                {
+                    ["Id"] = "2",
+                    ["Name"] = "Another Update",
+                    ["Description"] = "Updated Description",
+                    ["UserId"] = "User2"
                 }
             ]
         };
