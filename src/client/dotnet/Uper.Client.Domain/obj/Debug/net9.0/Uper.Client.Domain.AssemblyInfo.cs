@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Uper.Client.Domain")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5990600564fa123b26cbc92b35e2b3a8cd13be0c")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9e3d7ab8fae7494ed37dacc2504eca7b7a5c9b0c")]
 [assembly: System.Reflection.AssemblyProductAttribute("Uper.Client.Domain")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Uper.Client.Domain")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
