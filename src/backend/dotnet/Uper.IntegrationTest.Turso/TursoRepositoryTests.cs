@@ -1,124 +1,147 @@
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Uper.Domain.Abstraction.Repository;
 using Uper.Domain.Request.Dto;
+using Uper.IntegrationTest.Turso.Tools;
 using Uper.Repository.Turso;
 
 namespace Uper.IntegrationTest.Turso;
 
-public class TursoRepositoryTests : IAsyncLifetime
+public class TursoRepositoryTests
 {
-    private readonly IServiceProvider _serviceProvider;
-    private readonly IRepository _repository;
+    private readonly TursoClient _client; // Used for set up and tear down
+
+    private readonly IRepository _repository; // Being tested
 
     public TursoRepositoryTests()
     {
-        // Build configuration to include user secrets
-        var configuration = new ConfigurationBuilder()
-            .AddUserSecrets<TursoRepositoryTests>() // Use the test class to locate the secrets file
-            .Build();
-
         var services = new ServiceCollection();
-        services.AddTursoRepository(configuration); // Assume this method registers the TursoClient and TursoRepository
-        _serviceProvider = services.BuildServiceProvider();
-
-        _repository = _serviceProvider.GetRequiredService<IRepository>();
+        var serviceProvider = services.ConfigureServicesForIntegrationTest().BuildServiceProvider();
+        _client = serviceProvider.GetRequiredService<TursoClient>();
+        _repository = serviceProvider.GetRequiredService<IRepository>();
     }
 
-    public async Task InitializeAsync()
-    {
-        // Create test table
-        var client = _serviceProvider.GetRequiredService<TursoClient>();
-        await client.ExecuteQueryAsync("CREATE TABLE IF NOT EXISTS TestTable (Id TEXT PRIMARY KEY, Name TEXT, Description TEXT, UserId TEXT)");
-    }
-
-    public async Task DisposeAsync()
-    {
-        // Drop test table
-        var client = _serviceProvider.GetRequiredService<TursoClient>();
-        await client.ExecuteQueryAsync("DROP TABLE IF EXISTS TestTable");
-    }
+    private string GetTableName(string test) => $"{nameof(TursoRepositoryTests).GetInitials()}_{test}";
 
     [Fact]
     public async Task Create_ShouldInsertObject()
     {
-        var dto = new CreateUpdateDto
+        var testHelper = new TestHelper(_client);
+        await testHelper.InitializeAsync(GetTableName(nameof(Create_ShouldInsertObject)), false);
+
+        try
         {
-            Type = "TestTable",
-            Objects =
-            [
-                new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" }
-            ]
-        };
+            var dto = new CreateUpdateDto
+            {
+                Type = testHelper.TableName,
+                Objects =
+                [
+                    new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" }
+                ]
+            };
 
-        await _repository.CreateAsync(dto, "User1");
+            await _repository.CreateAsync(dto, "User1");
 
-        var results = await _repository.GetAllAsync("TestTable", "User1");
-        Assert.Single(results);
-        var result = results.FirstOrDefault();
-        Assert.NotNull(result);
-        Assert.Equal("Test1", result["Name"]);
+            var results = await _repository.GetAllAsync(testHelper.TableName, "User1");
+            Assert.Single(results);
+            var result = results.FirstOrDefault();
+            Assert.NotNull(result);
+            Assert.Equal("Test1", result["Name"]);
+        }
+        finally
+        {
+            await testHelper.DisposeAsync();
+        }
     }
 
     [Fact]
     public async Task Update_ShouldModifyObject()
     {
-        var dto = new CreateUpdateDto
+        var testHelper = new TestHelper(_client);
+        await testHelper.InitializeAsync(GetTableName(nameof(Update_ShouldModifyObject)), false);
+
+        try
         {
-            Type = "TestTable",
-            Objects =
-            [
-                new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" }
-            ]
-        };
+            var dto = new CreateUpdateDto
+            {
+                Type = testHelper.TableName,
+                Objects =
+                [
+                    new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" }
+                ]
+            };
 
-        await _repository.CreateAsync(dto, "User1");
+            await _repository.CreateAsync(dto, "User1");
 
-        dto.Objects[0]["Description"] = "Updated description";
-        await _repository.UpdateAsync(dto, "User1");
+            dto.Objects[0]["Description"] = "Updated description";
+            await _repository.UpdateAsync(dto, "User1");
 
-        var result = await _repository.GetByIdAsync("TestTable", "1", "User1");
-        Assert.NotNull(result);
-        Assert.Equal("Updated description", result["Description"]);
+            var result = await _repository.GetByIdAsync(testHelper.TableName, "1", "User1");
+            Assert.NotNull(result);
+            Assert.Equal("Updated description", result["Description"]);
+        }
+        finally
+        {
+            await testHelper.DisposeAsync();
+        }
     }
 
     [Fact]
     public async Task Delete_ShouldRemoveObject()
     {
-        var dto = new CreateUpdateDto
+        var testHelper = new TestHelper(_client);
+        await testHelper.InitializeAsync(GetTableName(nameof(Delete_ShouldRemoveObject)), false);
+
+        try
         {
-            Type = "TestTable",
-            Objects =
-            [
-                new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" }
-            ]
-        };
+            var dto = new CreateUpdateDto
+            {
+                Type = testHelper.TableName,
+                Objects =
+                [
+                    new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" }
+                ]
+            };
 
-        await _repository.CreateAsync(dto, "User1");
+            await _repository.CreateAsync(dto, "User1");
 
-        await _repository.DeleteAsync("TestTable", "1", "User1");
+            await _repository.DeleteAsync(testHelper.TableName, "1", "User1");
 
-        var result = await _repository.GetAllAsync("TestTable", "User1");
-        Assert.Empty(result);
+            var result = await _repository.GetAllAsync(testHelper.TableName, "User1");
+            Assert.Empty(result);
+        }
+        finally
+        {
+            await testHelper.DisposeAsync();
+        }
     }
 
     [Fact]
     public async Task GetAll_ShouldReturnAllObjects()
     {
-        var dto = new CreateUpdateDto
+        var testHelper = new TestHelper(_client);
+        await testHelper.InitializeAsync(GetTableName(nameof(GetAll_ShouldReturnAllObjects)), false);
+
+        try
         {
-            Type = "TestTable",
-            Objects =
-            [
-                new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" },
-                new() { ["Id"] = "2", ["Name"] = "Test2", ["Description"] = "Second test", ["UserId"] = "User1" }
-            ]
-        };
+            var dto = new CreateUpdateDto
+            {
+                Type = testHelper.TableName,
+                Objects =
+                [
+                    new() { ["Id"] = "1", ["Name"] = "Test1", ["Description"] = "First test", ["UserId"] = "User1" },
+                    new() { ["Id"] = "2", ["Name"] = "Test2", ["Description"] = "Second test", ["UserId"] = "User1" }
+                ]
+            };
 
-        await _repository.CreateAsync(dto, "User1");
+            await _repository.CreateAsync(dto, "User1");
 
-        var result = await _repository.GetAllAsync("TestTable", "User1");
-        Assert.NotNull(result);
-        Assert.Equal(2, result.Count());
+            var result = await _repository.GetAllAsync(testHelper.TableName, "User1");
+            Assert.NotNull(result);
+            Assert.Equal(2, result.Count());
+        }
+        finally
+        {
+            await testHelper.DisposeAsync();
+        }
     }
 }

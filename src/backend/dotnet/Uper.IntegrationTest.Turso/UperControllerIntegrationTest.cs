@@ -2,41 +2,72 @@ using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Uper.Domain.Request.Dto;
+using Uper.IntegrationTest.Turso.Tools;
+using Uper.Repository.Turso;
 
 namespace Uper.IntegrationTest.Turso;
 
-public class UperControllerIntegrationTests(WebApplicationFactory<Program> factory) : IClassFixture<WebApplicationFactory<Program>>
+public class UperControllerIntegrationTests : IClassFixture<WebApplicationFactory<Program>>
 {
-    private readonly HttpClient _client = factory.WithWebHostBuilder(builder =>
+    private readonly TursoClient _tursoClient;
+
+    private readonly HttpClient _client;
+
+    public UperControllerIntegrationTests(WebApplicationFactory<Program> factory)
+    {
+        _client = factory.WithWebHostBuilder(builder =>
         {
-            // Additional configuration for the test environment, if needed
+            builder.ConfigureTestServices(services =>
+            {
+                services.ConfigureServicesForIntegrationTest();
+            });
         }).CreateClient();
 
-    //[Fact]
+        var services = new ServiceCollection();
+        var serviceProvider = services.ConfigureServicesForIntegrationTest().BuildServiceProvider();
+        _tursoClient = serviceProvider.GetRequiredService<TursoClient>();
+    }
+
+    private string GetTableName(string test) => $"{nameof(UperControllerIntegrationTests).GetInitials()}_{test}";
+
+    [Fact]
     public async Task CreateAsync_ShouldReturnOk()
     {
-        // Arrange
-        var dto = new CreateUpdateDto
+        var testHelper = new TestHelper(_tursoClient);
+        await testHelper.InitializeAsync(GetTableName(nameof(CreateAsync_ShouldReturnOk)), false);
+
+        try
         {
-            Type = "TestType",
-            Objects =
-            [
-                new() { ["Id"] = "1", ["Name"] = "Test Name" }
-            ]
-        };
+            // Arrange
+            var dto = new CreateUpdateDto
+            {
+                Type = testHelper.TableName,
+                Objects =
+                [
+                    new() { ["Id"] = "1", ["Name"] = "Test Name" }
+                ]
+            };
 
-        var jsonContent = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
+            var jsonContent = new StringContent(JsonSerializer.Serialize(dto), Encoding.UTF8, "application/json");
 
-        // Add a mock Authorization header
-        _client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", "mock-jwt-token");
+            // Add a mock Authorization header
+            _client.DefaultRequestHeaders.Authorization
+                = new AuthenticationHeaderValue("Bearer", "mock-jwt-token");
 
-        // Act
-        var response = await _client.PostAsync("/api/Uper/create", jsonContent);
+            // Act
+            var response = await _client.PostAsync("/api/Uper/create", jsonContent);
 
-        // Assert
-        response.EnsureSuccessStatusCode();
-        var responseString = await response.Content.ReadAsStringAsync();
-        Assert.Contains("Data created successfully", responseString);
+            // Assert
+            response.EnsureSuccessStatusCode();
+            var responseString = await response.Content.ReadAsStringAsync();
+            Assert.Contains("Data created successfully", responseString);
+        }
+        finally
+        {
+            await testHelper.DisposeAsync();
+        }
     }
 }
