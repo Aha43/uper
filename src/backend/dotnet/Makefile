@@ -1,8 +1,8 @@
 # Variables
 SOLUTION = uperapi.sln
 SOLUTION_DIR = .
-UNIT_TEST_PROJECT = $(SOLUTION_DIR)/Uper.UnitTest
-INTEGRATION_TEST_PROJECT = $(SOLUTION_DIR)/Uper.IntegrationTest.Turso
+UNIT_TEST_PROJECT = $(SOLUTION_DIR)/Uper.Backend.UnitTest
+INTEGRATION_TEST_PROJECT = $(SOLUTION_DIR)/Uper.Backend.IntegrationTest.Turso
 
 # Default target
 all: build
@@ -24,7 +24,7 @@ restore:
 	dotnet restore $(SOLUTION)
 
 run:
-	dotnet run --project $(SOLUTION_DIR)/Uper.Api
+	dotnet run --project $(SOLUTION_DIR)/Uper.Backend.Api
 
 format:
 	dotnet format $(SOLUTION)

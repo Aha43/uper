@@ -3,19 +3,19 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Api", "Uper.Api\Uper.Api.csproj", "{64DDAC07-84AC-4E7D-A84E-4B7AF6C35526}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Backend.Api", "Uper.Backend.Api\Uper.Backend.Api.csproj", "{64DDAC07-84AC-4E7D-A84E-4B7AF6C35526}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Domain", "Uper.Domain\Uper.Domain.csproj", "{708F4D69-728F-4FBB-8AC1-031E09F5A48F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Backend.Domain", "Uper.Backend.Domain\Uper.Backend.Domain.csproj", "{708F4D69-728F-4FBB-8AC1-031E09F5A48F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.UnitTest", "Uper.UnitTest\Uper.UnitTest.csproj", "{DCFE3F39-37F5-4C58-B497-0678BA2CF64F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Backend.UnitTest", "Uper.Backend.UnitTest\Uper.Backend.UnitTest.csproj", "{DCFE3F39-37F5-4C58-B497-0678BA2CF64F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Repository.Common", "Uper.Repository.Common\Uper.Repository.Common.csproj", "{AD3BDBA3-C538-4B97-8945-212D02BE1845}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Backend.Repository.Common", "Uper.Backend.Repository.Common\Uper.Backend.Repository.Common.csproj", "{AD3BDBA3-C538-4B97-8945-212D02BE1845}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Repository.Turso", "Uper.Repository.Turso\Uper.Repository.Turso.csproj", "{3893C5C7-748F-485E-83AA-800B998B84A2}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Backend.Repository.Turso", "Uper.Backend.Repository.Turso\Uper.Backend.Repository.Turso.csproj", "{3893C5C7-748F-485E-83AA-800B998B84A2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.IntegrationTest.Turso", "Uper.IntegrationTest.Turso\Uper.IntegrationTest.Turso.csproj", "{BF53AA49-68E2-4CEF-838B-3184A66C34A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Backend.IntegrationTest.Turso", "Uper.Backend.IntegrationTest.Turso\Uper.Backend.IntegrationTest.Turso.csproj", "{BF53AA49-68E2-4CEF-838B-3184A66C34A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Common", "Uper.Common\Uper.Common.csproj", "{33F49256-A20C-4306-86BB-05480042CE75}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Uper.Backend.Common", "Uper.Backend.Common\Uper.Backend.Common.csproj", "{33F49256-A20C-4306-86BB-05480042CE75}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
